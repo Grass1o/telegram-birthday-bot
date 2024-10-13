@@ -1,7 +1,7 @@
 import os
 import logging
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler
 from database import add_employee, remove_employee, get_employees
 from scheduler import schedule_notifications
 
@@ -12,7 +12,8 @@ async def start(update: Update, context):
     await update.message.reply_text(
         "Привет! Я бот для напоминания о днях рождения сотрудников. Вот команды:\n"
         "/add_employee - Добавить сотрудника в формате ФИО ДД.ММ.ГГГГ\n"
-        "/remove_employee - Удалить сотрудника по его номеру"
+        "/remove_employee - Удалить сотрудника по его номеру\n"
+        "/list_employees - Показать список ваших сотрудников"
     )
 
 async def add_employee_command(update: Update, context):
@@ -44,6 +45,15 @@ async def remove_employee_command(update: Update, context):
 
     context.application.add_handler(MessageHandler(filters.TEXT, handle_remove))
 
+# Новая команда для просмотра списка сотрудников
+async def list_employees_command(update: Update, context):
+    employees = get_employees(update.message.from_user.id)
+    if not employees:
+        await update.message.reply_text('Ваш список сотрудников пуст.')
+    else:
+        list_text = "\n".join([f"{i + 1}. {e['name']} - {e['birthday']}" for i, e in enumerate(employees)])
+        await update.message.reply_text(f'Ваши сотрудники:\n{list_text}')
+
 if __name__ == '__main__':
     # Получение токена из переменной окружения
     TOKEN = os.getenv('BOT_TOKEN')
@@ -52,6 +62,7 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler('start', start))
     app.add_handler(CommandHandler('add_employee', add_employee_command))
     app.add_handler(CommandHandler('remove_employee', remove_employee_command))
+    app.add_handler(CommandHandler('list_employees', list_employees_command))  # Добавлена команда
 
     schedule_notifications(app)  # Запуск планировщика
 
