@@ -1,3 +1,4 @@
+import os
 import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
@@ -44,7 +45,9 @@ async def remove_employee_command(update: Update, context):
     context.application.add_handler(MessageHandler(filters.TEXT, handle_remove))
 
 if __name__ == '__main__':
-    app = ApplicationBuilder().token('YOUR_TELEGRAM_BOT_TOKEN').build()
+    # Получение токена из переменной окружения
+    TOKEN = os.getenv('BOT_TOKEN')
+    app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler('start', start))
     app.add_handler(CommandHandler('add_employee', add_employee_command))
