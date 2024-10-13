@@ -3,6 +3,6 @@ services:
   bot:
     build: .
     environment:
-      - BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
+      - BOT_TOKEN=your_actual_token_here  # Убедитесь, что здесь ваш токен
     volumes:
       - ./employees.db:/app/employees.db
