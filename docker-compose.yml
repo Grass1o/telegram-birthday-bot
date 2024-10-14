@@ -2,7 +2,9 @@ version: '3'
 services:
   bot:
     build: .
+    container_name: birthday_bot
     environment:
-      - BOT_TOKEN=your_actual_token_here  # Убедитесь, что здесь ваш токен
+      - BOT_TOKEN=${BOT_TOKEN}
     volumes:
-      - ./employees.db:/app/employees.db
+      - ./logs:/app/logs
+    restart: always
